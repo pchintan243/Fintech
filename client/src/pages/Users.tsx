@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { useUsers, useUpdateUser, useCreateUser } from "@/hooks/use-users";
 import { formatDate } from "@/lib/utils";
-import type { User, UpdateUserRequest, CreateUserRequest } from "@workspace/api-client-react";
+import type { User } from "@/lib/api-client";
 
 export default function UsersPage() {
   const { data: users, isLoading } = useUsers();
@@ -20,7 +20,7 @@ export default function UsersPage() {
 
   const filteredUsers = React.useMemo(() => {
     if (!users) return [];
-    return users.filter(u => 
+    return (users as User[]).filter((u: User) =>
       u.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
       u.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -76,7 +76,7 @@ export default function UsersPage() {
               ) : filteredUsers.length === 0 ? (
                 <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">No users found.</td></tr>
               ) : (
-                filteredUsers.map(user => (
+                filteredUsers.map((user: User) => (
                   <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">

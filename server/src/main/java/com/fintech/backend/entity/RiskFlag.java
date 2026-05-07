@@ -1,9 +1,10 @@
 package com.fintech.backend.entity;
 
+import com.fintech.backend.enums.RiskFlagStatus;
+import com.fintech.backend.enums.RiskFlagType;
+import com.fintech.backend.enums.RiskSeverity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +12,12 @@ import java.time.LocalDateTime;
 @Table(name = "tbriskflag")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "transaction"})
+@ToString(exclude = {"user", "transaction"})
 public class RiskFlag extends BaseAuditEntity {
-
-    protected RiskFlag() {
-        this.status = RiskFlagStatus.OPEN;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +38,7 @@ public class RiskFlag extends BaseAuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private RiskFlagStatus status = RiskFlagStatus.OPEN;
 
     @Column(name = "description", nullable = false)
@@ -54,16 +56,4 @@ public class RiskFlag extends BaseAuditEntity {
 
     @Column(name = "resolution")
     private String resolution;
-
-    public enum RiskFlagType {
-        VELOCITY_CHECK, HIGH_VALUE, GEOFENCE, SUSPICIOUS_PATTERN, AML_ALERT
-    }
-
-    public enum RiskSeverity {
-        LOW, MEDIUM, HIGH, CRITICAL
-    }
-
-    public enum RiskFlagStatus {
-        OPEN, INVESTIGATING, RESOLVED, FALSE_POSITIVE
-    }
 }

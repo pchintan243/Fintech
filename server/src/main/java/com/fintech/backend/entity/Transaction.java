@@ -1,23 +1,26 @@
 package com.fintech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fintech.backend.enums.TransactionStatus;
+import com.fintech.backend.enums.TransactionType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tbtransactions")
 @Getter
 @Setter
-@SuperBuilder
-public class Transaction extends BaseAuditEntity {
-
-    protected Transaction() {
-        this.currency = "USD";
-        this.status = TransactionStatus.PENDING;
-    }
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Transaction extends BaseAuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +31,9 @@ public class Transaction extends BaseAuditEntity {
     @JoinColumn(name = "walletidf", nullable = false)
     private Wallet wallet;
 
+    @Column(name = "walletidf", insertable = false, updatable = false)
+    private Long walletId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private TransactionType type;
@@ -36,11 +42,11 @@ public class Transaction extends BaseAuditEntity {
     private BigDecimal amount;
 
     @Column(name = "currency", nullable = false)
-    private String currency = "USD";
+    private String currency;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private TransactionStatus status = TransactionStatus.PENDING;
+    private TransactionStatus status;
 
     @Column(name = "description")
     private String description;
@@ -59,15 +65,4 @@ public class Transaction extends BaseAuditEntity {
 
     @Column(name = "balanceafter", precision = 18, scale = 2, nullable = false)
     private BigDecimal balanceAfter;
-
-    @Column(name = "metadata", columnDefinition = "json")
-    private String metadata;
-
-    public enum TransactionType {
-        DEBIT, CREDIT, TRANSFER, DEPOSIT, WITHDRAWAL
-    }
-
-    public enum TransactionStatus {
-        PENDING, PROCESSING, COMPLETED, FAILED, REFUNDED
-    }
 }

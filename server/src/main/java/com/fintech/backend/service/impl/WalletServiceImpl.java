@@ -1,5 +1,6 @@
 package com.fintech.backend.service.impl;
 
+import com.fintech.backend.dto.WalletProjection;
 import com.fintech.backend.entity.Currency;
 import com.fintech.backend.entity.User;
 import com.fintech.backend.entity.Wallet;
@@ -10,7 +11,10 @@ import com.fintech.backend.service.WalletService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
+
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -27,8 +31,28 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    public Optional<Wallet> getById(Long id) {
+        return walletRepository.findById(id);
+    }
+
+    @Override
     public List<Wallet> getUserWallets(Long userId) {
         return walletRepository.findByUserId(userId);
+    }
+
+    @Override
+    public Optional<WalletProjection> getByIdProjected(Long id) {
+        return walletRepository.findProjectedById(id);
+    }
+
+    @Override
+    public List<WalletProjection> getUserWalletsProjected(Long userId) {
+        return walletRepository.findProjectedByUserId(userId);
+    }
+
+    @Override
+    public List<WalletProjection> getAllWalletsProjected() {
+        return walletRepository.findAllProjectedBy();
     }
 
     @Override

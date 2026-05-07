@@ -4,6 +4,7 @@ import { Bell, AlertCircle, Info, FileText } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { useNotifications } from "@/hooks/use-notifications";
 import { formatDate } from "@/lib/utils";
+import type { Notification } from "@/lib/api-client";
 
 export default function NotificationsPage() {
   const { data: notifications, isLoading } = useNotifications();
@@ -34,7 +35,7 @@ export default function NotificationsPage() {
             <p className="text-muted-foreground">No new notifications to display.</p>
           </Card>
         ) : (
-          notifications?.map(notif => (
+          (notifications as Notification[])?.map(notif => (
             <Card key={notif.id} className={`p-4 flex items-start gap-4 transition-colors ${notif.isRead ? 'opacity-70 bg-background/50' : 'bg-card border-primary/20'}`}>
               <div className="w-10 h-10 rounded-full bg-background border border-white/5 flex items-center justify-center shrink-0 mt-1">
                 {getIcon(notif.type)}

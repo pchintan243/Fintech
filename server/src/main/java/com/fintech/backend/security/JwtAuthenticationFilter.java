@@ -1,5 +1,6 @@
 package com.fintech.backend.security;
 
+import com.fintech.backend.dto.UserDetailsDto;
 import com.fintech.backend.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,8 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
                 if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UserDetailsDto customUserDetails = (UserDetailsDto) userDetails;
+                    Long userId = customUserDetails.getUser().getId();
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            userId,
                             null,
                             userDetails.getAuthorities()
                     );

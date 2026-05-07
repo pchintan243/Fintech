@@ -1,9 +1,8 @@
 package com.fintech.backend.entity;
 
+import com.fintech.backend.enums.WalletStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -11,14 +10,12 @@ import java.math.BigDecimal;
 @Table(name = "tbwallets")
 @Getter
 @Setter
-@SuperBuilder
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, exclude = {"user", "currency"})
+@ToString(exclude = {"user", "currency"})
 public class Wallet extends BaseAuditEntity {
-
-    protected Wallet() {
-        this.balance = BigDecimal.ZERO;
-        this.availableBalance = BigDecimal.ZERO;
-        this.status = WalletStatus.ACTIVE;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,19 +31,18 @@ public class Wallet extends BaseAuditEntity {
     private Currency currency;
 
     @Column(name = "balance", precision = 18, scale = 2, nullable = false)
+    @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(name = "availablebalance", precision = 18, scale = 2, nullable = false)
+    @Builder.Default
     private BigDecimal availableBalance = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private WalletStatus status = WalletStatus.ACTIVE;
 
     @Column(name = "walletnumber", nullable = false, unique = true)
     private String walletNumber;
-
-    public enum WalletStatus {
-        ACTIVE, FROZEN, CLOSED
-    }
 }

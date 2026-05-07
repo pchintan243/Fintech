@@ -66,10 +66,10 @@ export default function WalletsPage() {
                 </div>
                 
                 <h4 className="text-3xl font-display font-bold tracking-tight mb-1">
-                  {formatCurrency(Number(wallet.balance), wallet.currencyCode)}
+                  {formatCurrency(wallet.balance, wallet.currencyCode)}
                 </h4>
                 <p className="text-sm font-mono text-muted-foreground">
-                  {wallet.currency?.symbol} {wallet.currencyCode} • Available: {formatCurrency(Number(wallet.availableBalance), wallet.currencyCode)}
+                  {wallet.currencySymbol} {wallet.currencyCode} • Available: {formatCurrency(wallet.availableBalance, wallet.currencyCode)}
                 </p>
               </div>
 
@@ -78,12 +78,6 @@ export default function WalletsPage() {
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Wallet ID</p>
                   <p className="text-sm font-mono">{wallet.walletNumber}</p>
                 </div>
-                {wallet.user && (
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Owner</p>
-                    <p className="text-sm font-medium">{wallet.user.fullName}</p>
-                  </div>
-                )}
               </div>
             </Card>
           ))}

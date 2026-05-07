@@ -1,11 +1,9 @@
 package com.fintech.backend.service;
 
-import com.fintech.backend.dto.AuthRequestDTO;
-import com.fintech.backend.dto.AuthResponseDTO;
-import com.fintech.backend.dto.CreateUserRequestDTO;
-import com.fintech.backend.dto.RegisterRequestDTO;
+import com.fintech.backend.dto.*;
 import com.fintech.backend.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
@@ -13,7 +11,12 @@ public interface UserService {
     AuthResponseDTO register(RegisterRequestDTO request);
     Optional<User> getUserByEmail(String email);
     User getCurrentUser(String email);
-    java.util.List<User> getAllUsers();
-    User createUser(CreateUserRequestDTO request);
-    User updateUser(Long id, com.fintech.backend.dto.UpdateUserRequestDTO request);
+    CreateUserResponseDTO createUser(CreateUserRequestDTO request);
+    UpdateUserResponseDTO updateUser(Long id, UpdateUserRequestDTO request);
+    void deleteUser(Long id);
+
+    // Projection-based read methods (no entity serialization)
+    List<UserProjection> getAllUsersProjected();
+    Optional<UserProjection> getUserByIdProjected(Long id);
+    Optional<UserProjection> getUserByEmailProjected(String email);
 }

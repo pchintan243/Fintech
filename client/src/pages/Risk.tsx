@@ -1,14 +1,14 @@
 import * as React from "react";
 import { motion } from "framer-motion";
-import { ShieldAlert, CheckCircle, AlertTriangle } from "lucide-react";
+import { CheckCircle, AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { useRiskFlags, useResolveRiskFlag } from "@/hooks/use-risk";
-import { formatDate } from "@/lib/utils";
-import type { RiskFlag } from "@workspace/api-client-react";
+import { formatDate, cn } from "@/lib/utils";
+import type { RiskFlag } from "@/lib/api-client";
 
 export default function RiskPage() {
   const { data: flags, isLoading } = useRiskFlags();
@@ -25,11 +25,9 @@ export default function RiskPage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-display font-bold">Risk Operations</h1>
-          <p className="text-muted-foreground">Monitor and resolve compliance flags</p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-display font-bold">Risk Operations</h1>
+        <p className="text-muted-foreground">Monitor and resolve compliance flags</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4">
@@ -42,7 +40,7 @@ export default function RiskPage() {
             <p className="text-muted-foreground">The platform is operating within safe parameters.</p>
           </Card>
         ) : (
-          flags?.map(flag => (
+          flags?.map((flag: RiskFlag) => (
             <Card key={flag.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-white/[0.02]">
               <div className="flex items-start gap-4">
                 <div className={cn("w-10 h-10 rounded-full flex items-center justify-center border shrink-0", getSeverityColor(flag.severity))}>
@@ -65,7 +63,7 @@ export default function RiskPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="shrink-0">
                 {(flag.status === 'OPEN' || flag.status === 'INVESTIGATING') ? (
                   <Button onClick={() => setSelectedFlag(flag)}>Resolve Case</Button>
@@ -94,7 +92,7 @@ function ResolveModal({ flag, onClose }: { flag: RiskFlag | null, onClose: () =>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!flag) return;
-    resolve({ flagId: flag.id, data: { status, resolution } }, { onSuccess: onClose });
+    resolve({ id: flag.id, data: { status, resolution } }, { onSuccess: onClose });
   };
 
   return (
@@ -102,7 +100,7 @@ function ResolveModal({ flag, onClose }: { flag: RiskFlag | null, onClose: () =>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Outcome</label>
-          <select 
+          <select
             className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -113,9 +111,9 @@ function ResolveModal({ flag, onClose }: { flag: RiskFlag | null, onClose: () =>
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Resolution Notes</label>
-          <Input 
-            required 
-            placeholder="Explain action taken..." 
+          <Input
+            required
+            placeholder="Explain action taken..."
             value={resolution}
             onChange={(e) => setResolution(e.target.value)}
           />

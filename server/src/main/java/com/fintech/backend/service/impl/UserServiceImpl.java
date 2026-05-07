@@ -2,6 +2,9 @@ package com.fintech.backend.service.impl;
 
 import com.fintech.backend.dto.*;
 import com.fintech.backend.entity.User;
+import com.fintech.backend.enums.AccountTier;
+import com.fintech.backend.enums.UserKycStatus;
+import com.fintech.backend.enums.UserRole;
 import com.fintech.backend.repository.UserRepository;
 import com.fintech.backend.service.EmailService;
 import com.fintech.backend.service.UserService;
@@ -13,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,7 +70,7 @@ public class UserServiceImpl implements UserService {
                 .fullName(request.getFullName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
-                .role(User.Role.ROLE_USER)
+                .role(UserRole.ROLE_USER)
                 .build();
 
         userRepository.save(user);
@@ -89,17 +93,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findById(Long.parseLong(email))
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
     }
 
     @Override
-    public java.util.List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserProjection> getAllUsersProjected() {
+        return userRepository.findAllProjectedBy();
     }
 
     @Override
-    public User createUser(CreateUserRequestDTO request) {
+    public Optional<UserProjection> getUserByIdProjected(Long id) {
+        return userRepository.findProjectedById(id);
+    }
+
+    @Override
+    public Optional<UserProjection> getUserByEmailProjected(String email) {
+        return userRepository.findProjectedByEmail(email);
+    }
+
+    @Override
+    public CreateUserResponseDTO createUser(CreateUserRequestDTO request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
@@ -111,25 +125,49 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(rawPassword))
                 .phone(request.getPhone())
                 .country(request.getCountry())
+                .role(UserRole.ROLE_USER)
                 .build();
 
         User saved = userRepository.save(user);
         emailService.sendWelcomeEmail(saved, rawPassword);
-        return saved;
+
+        return CreateUserResponseDTO.builder()
+                .id(saved.getId())
+                .email(saved.getEmail())
+                .fullName(saved.getFullName())
+                .role(saved.getRole().name())
+                .build();
     }
 
     @Override
-    public User updateUser(Long id, UpdateUserRequestDTO request) {
+    public UpdateUserResponseDTO updateUser(Long id, UpdateUserRequestDTO request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found: " + id));
 
         if (request.getKycStatus() != null) {
-            user.setKycStatus(User.KycStatus.valueOf(request.getKycStatus()));
+            user.setKycStatus(UserKycStatus.valueOf(request.getKycStatus()));
         }
         if (request.getAccountTier() != null) {
-            user.setAccountTier(User.AccountTier.valueOf(request.getAccountTier()));
+            user.setAccountTier(AccountTier.valueOf(request.getAccountTier()));
         }
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        return UpdateUserResponseDTO.builder()
+                .id(saved.getId())
+                .email(saved.getEmail())
+                .fullName(saved.getFullName())
+                .kycStatus(saved.getKycStatus().name())
+                .accountTier(saved.getAccountTier().name())
+                .role(saved.getRole().name())
+                .build();
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found: " + id);
+        }
+        userRepository.deleteById(id);
     }
 }

@@ -2,9 +2,12 @@ package com.fintech.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -12,15 +15,11 @@ import java.math.BigDecimal;
 @Table(name = "tbcurrencies")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@SuperBuilder
 public class Currency extends BaseAuditEntity {
-
-    protected Currency() {
-        this.decimals = 2;
-        this.isActive = true;
-        this.exchangeRate = BigDecimal.ONE;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,11 +36,12 @@ public class Currency extends BaseAuditEntity {
     private String symbol;
 
     @Column(name = "decimals", nullable = false)
-    private Integer decimals = 2;
+    private Integer decimals;
 
     @Column(name = "isactive", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
     @Column(name = "exchangerate", precision = 18, scale = 6)
+    @Builder.Default
     private BigDecimal exchangeRate = BigDecimal.ONE;
 }

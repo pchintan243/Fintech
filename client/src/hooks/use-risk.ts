@@ -1,5 +1,5 @@
-import { 
-  useListRiskFlags as useGenListRiskFlags, 
+import {
+  useListRiskFlags as useGenListRiskFlags,
   useResolveRiskFlag as useGenResolveRiskFlag,
   getListRiskFlagsQueryKey,
   getGetDashboardStatsQueryKey

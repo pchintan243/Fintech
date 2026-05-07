@@ -53,7 +53,19 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
       localStorage.removeItem("fintrack_user");
       navigate("/login");
     }
-    throw new Error(`API Error: ${response.statusText}`);
+    // Try to extract error message from response body
+    let errorMsg = response.statusText;
+    try {
+      const body = await response.json();
+      if (body && body.error) {
+        errorMsg = body.error;
+      } else if (body && body.message) {
+        errorMsg = body.message;
+      }
+    } catch {
+      // ignore parse failure
+    }
+    throw new Error(errorMsg);
   }
 
   if (response.status === 204) return null;
@@ -68,36 +80,38 @@ export interface User {
   phone: string;
   kycStatus: string;
   accountTier: string;
-  transactionLimit: string;
+  transactionLimit: number;
   country: string;
+  role: string;
   createdAt: string;
 }
 
 export interface Wallet {
   id: number;
-  user: User;
   userId: number;
-  currency: { id: number; code: string; name: string; symbol: string };
   currencyCode: string;
+  currencyName: string;
+  currencySymbol: string;
   walletNumber: string;
-  balance: string;
-  availableBalance: string;
+  balance: number;
+  availableBalance: number;
   status: string;
+  createdAt: string;
 }
 
 export interface Transaction {
   id: number;
   walletId: number;
   type: string;
-  amount: string;
+  amount: number;
   currency: string;
   status: string;
   description: string;
   reference: string;
   counterpartyName?: string;
   counterpartyAccount?: string;
-  balanceBefore: string;
-  balanceAfter: string;
+  balanceBefore: number;
+  balanceAfter: number;
   createdAt: string;
 }
 
@@ -108,11 +122,16 @@ export interface RiskFlag {
   severity: string;
   status: string;
   description: string;
+  transactionId?: number;
+  resolvedAt?: string;
+  resolvedBy?: string;
+  resolution?: string;
   createdAt: string;
 }
 
 export interface Notification {
   id: number;
+  userId: number;
   type: string;
   title: string;
   message: string;
@@ -151,6 +170,12 @@ export const useUpdateUser = (options: any = {}) =>
     ...options.mutation,
   });
 
+export const useDeleteUser = (options: any = {}) =>
+  useMutation({
+    mutationFn: (id: number) => apiFetch(`/users/${id}`, { method: "DELETE" }),
+    ...options.mutation,
+  });
+
 // Hooks - Wallets
 export const useListWallets = (options: any = {}) =>
   useQuery({ queryKey: getListWalletsQueryKey(), queryFn: () => apiFetch("/wallets"), ...options.query });
@@ -166,8 +191,8 @@ export const useCreateWallet = (options: any = {}) =>
   });
 
 // Hooks - Transactions
-export const useListTransactions = () =>
-  useQuery({ queryKey: getListTransactionsQueryKey(), queryFn: () => apiFetch("/transactions") });
+export const useListTransactions = (options: any = {}) =>
+  useQuery({ queryKey: getListTransactionsQueryKey(), queryFn: () => apiFetch("/transactions"), ...options });
 
 export const useGetTransaction = (id: string | number, options: any = {}) =>
   useQuery({ queryKey: ["transactions", id], queryFn: () => apiFetch(`/transactions/${id}`), ...options.query });
@@ -178,7 +203,11 @@ export const useListRiskFlags = () =>
 
 export const useResolveRiskFlag = (options: any = {}) =>
   useMutation({
-    mutationFn: (id: number) => apiFetch(`/risk/${id}/resolve`, { method: "POST" }),
+    mutationFn: ({ id, data }: { id: number; data: { status?: string; resolution?: string } }) =>
+      apiFetch(`/risk/${id}/resolve`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     ...options.mutation,
   });
 

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useDashboardStats } from "@/hooks/use-transactions";
 import { cn, formatCurrency, formatDate, formatNumber } from "@/lib/utils";
+import type { Transaction } from "@/lib/api-client";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {
@@ -136,7 +137,7 @@ export default function Dashboard() {
             {stats.recentTransactions?.length === 0 ? (
               <p className="text-muted-foreground text-sm">No recent transactions.</p>
             ) : (
-              stats.recentTransactions?.slice(0, 5).map(tx => (
+              stats.recentTransactions?.slice(0, 5).map((tx: Transaction) => (
                 <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
@@ -149,7 +150,7 @@ export default function Dashboard() {
                   </div>
                   <div className="text-right">
                     <p className={cn("text-sm font-bold", tx.type === "CREDIT" || tx.type === "DEPOSIT" ? "text-success" : "text-foreground")}>
-                      {tx.type === "CREDIT" || tx.type === "DEPOSIT" ? "+" : "-"}{formatCurrency(tx.amount, tx.currency)}
+                      {tx.type === "CREDIT" || tx.type === "DEPOSIT" ? "+" : "-"}{formatCurrency(tx.amount)}
                     </p>
                     <Badge variant={
                       tx.status === "COMPLETED" ? "success" : 

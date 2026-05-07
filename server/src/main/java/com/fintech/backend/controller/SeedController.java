@@ -1,6 +1,9 @@
 package com.fintech.backend.controller;
 
 import com.fintech.backend.entity.User;
+import com.fintech.backend.enums.AccountTier;
+import com.fintech.backend.enums.UserKycStatus;
+import com.fintech.backend.enums.UserRole;
 import com.fintech.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +29,7 @@ public class SeedController {
     public String seedAdmin() {
         if (userRepository.findByEmail("admin@fintrack.io").isPresent()) {
             User user = userRepository.findByEmail("admin@fintrack.io").get();
-            user.setRole(User.Role.ROLE_ADMIN);
-            // Re-hash password to be 100% sure
+            user.setRole(UserRole.ROLE_ADMIN);
             user.setPassword(passwordEncoder.encode("admin"));
             userRepository.save(user);
             return "Admin user already exists, password reset to admin and role updated to ROLE_ADMIN";
@@ -35,13 +37,13 @@ public class SeedController {
 
         User admin = User.builder()
                 .email("admin@fintrack.io")
-                .password(passwordEncoder.encode("admin"))
                 .fullName("System Administrator")
-                .role(User.Role.ROLE_ADMIN)
-                .kycStatus(User.KycStatus.PREMIUM)
-                .accountTier(User.AccountTier.PREMIUM)
+                .password(passwordEncoder.encode("admin"))
+                .kycStatus(UserKycStatus.PREMIUM)
+                .accountTier(AccountTier.PREMIUM)
+                .role(UserRole.ROLE_ADMIN)
                 .build();
-        
+
         userRepository.save(admin);
         return "Admin user created successfully: admin@fintrack.io / admin";
     }

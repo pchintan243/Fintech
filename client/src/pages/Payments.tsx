@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/Input";
 import { useWallets } from "@/hooks/use-wallets";
 import { useDeposit, useWithdrawal, useTransfer } from "@/hooks/use-payments";
 import { cn, formatCurrency } from "@/lib/utils";
+import type { Wallet } from "@/lib/api-client";
 
 export default function PaymentsPage() {
   const [activeTab, setActiveTab] = React.useState<"deposit" | "withdraw" | "transfer">("deposit");
-  const { data: wallets } = useWallets();
+  const { data: rawWallets } = useWallets();
+  const wallets = (rawWallets ?? []) as Wallet[];
 
   const { mutate: deposit, isPending: depPending } = useDeposit();
   const { mutate: withdraw, isPending: wdwPending } = useWithdrawal();
@@ -78,9 +80,9 @@ export default function PaymentsPage() {
                 onChange={(e) => setWalletId(e.target.value)}
               >
                 <option value="">Select a wallet...</option>
-                {wallets?.map(w => (
+                {wallets.map(w => (
                   <option key={w.id} value={w.id}>
-                    {w.walletNumber} • {w.currency} {formatCurrency(w.balance, "")} ({w.user?.fullName})
+                    {w.walletNumber} • {formatCurrency(w.balance, w.currencyCode)}
                   </option>
                 ))}
               </select>
@@ -96,9 +98,9 @@ export default function PaymentsPage() {
                   onChange={(e) => setToWalletId(e.target.value)}
                 >
                   <option value="">Select destination wallet...</option>
-                  {wallets?.filter(w => w.id !== walletId).map(w => (
+                  {wallets.filter(w => w.id !== Number(walletId)).map(w => (
                     <option key={w.id} value={w.id}>
-                      {w.walletNumber} • {w.currency} ({w.user?.fullName})
+                      {w.walletNumber} • {w.currencyCode}
                     </option>
                   ))}
                 </select>

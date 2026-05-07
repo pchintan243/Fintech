@@ -77,7 +77,7 @@ export default function TransactionsPage() {
                         "font-bold font-mono text-base",
                         (tx.type === "DEPOSIT" || tx.type === "CREDIT") ? "text-success" : "text-foreground"
                       )}>
-                        {(tx.type === "DEPOSIT" || tx.type === "CREDIT") ? "+" : "-"}{formatCurrency(Number(tx.amount), tx.currency)}
+                        {(tx.type === "DEPOSIT" || tx.type === "CREDIT") ? "+" : "-"}{formatCurrency(tx.amount, tx.currency)}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">

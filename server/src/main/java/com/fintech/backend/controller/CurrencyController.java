@@ -1,6 +1,7 @@
 package com.fintech.backend.controller;
 
 import com.fintech.backend.dto.CreateCurrencyRequestDTO;
+import com.fintech.backend.dto.CurrencyProjection;
 import com.fintech.backend.dto.UpdateCurrencyRequestDTO;
 import com.fintech.backend.entity.Currency;
 import com.fintech.backend.service.CurrencyService;
@@ -20,30 +21,30 @@ public class CurrencyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Currency>> getAllCurrencies() {
-        return ResponseEntity.ok(currencyService.getAllCurrencies());
+    public ResponseEntity<List<CurrencyProjection>> getAllCurrencies() {
+        return ResponseEntity.ok(currencyService.getAllCurrenciesProjected());
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<Currency>> getActiveCurrencies() {
-        return ResponseEntity.ok(currencyService.getActiveCurrencies());
+    public ResponseEntity<List<CurrencyProjection>> getActiveCurrencies() {
+        return ResponseEntity.ok(currencyService.getActiveCurrenciesProjected());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Currency> getCurrencyById(@PathVariable Long id) {
-        return currencyService.getCurrencyById(id)
+    public ResponseEntity<CurrencyProjection> getCurrencyById(@PathVariable Long id) {
+        return currencyService.getCurrencyByIdProjected(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Currency> createCurrency(@RequestBody CreateCurrencyRequestDTO dto) {
-        return ResponseEntity.ok(currencyService.createCurrency(dto));
+    public ResponseEntity<CurrencyProjection> createCurrency(@RequestBody CreateCurrencyRequestDTO dto) {
+        return ResponseEntity.ok(currencyService.createCurrencyProjected(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Currency> updateCurrency(@PathVariable Long id, @RequestBody UpdateCurrencyRequestDTO dto) {
-        return ResponseEntity.ok(currencyService.updateCurrency(id, dto));
+    public ResponseEntity<CurrencyProjection> updateCurrency(@PathVariable Long id, @RequestBody UpdateCurrencyRequestDTO dto) {
+        return ResponseEntity.ok(currencyService.updateCurrencyProjected(id, dto));
     }
 
     @DeleteMapping("/{id}")

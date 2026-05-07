@@ -2,10 +2,11 @@ package com.fintech.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fintech.backend.enums.AccountTier;
+import com.fintech.backend.enums.UserKycStatus;
+import com.fintech.backend.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -13,16 +14,13 @@ import java.math.BigDecimal;
 @Table(name = "tbusers")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, exclude = {"password"})
+@ToString(exclude = {"password"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@SuperBuilder
 public class User extends BaseAuditEntity {
-
-    protected User() {
-        this.kycStatus = KycStatus.UNVERIFIED;
-        this.accountTier = AccountTier.FREE;
-        this.transactionLimit = new BigDecimal("1000.00");
-        this.role = Role.ROLE_USER;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,31 +42,22 @@ public class User extends BaseAuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "kycstatus", nullable = false)
-    private KycStatus kycStatus = KycStatus.UNVERIFIED;
+    @Builder.Default
+    private UserKycStatus kycStatus = UserKycStatus.UNVERIFIED;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "accounttier", nullable = false)
+    @Builder.Default
     private AccountTier accountTier = AccountTier.FREE;
 
     @Column(name = "transactionlimit", precision = 18, scale = 2, nullable = false)
+    @Builder.Default
     private BigDecimal transactionLimit = new BigDecimal("1000.00");
 
     @Column(name = "country")
     private String country;
 
-    public enum KycStatus {
-        UNVERIFIED, PENDING, BASIC, PREMIUM, REJECTED
-    }
-
-    public enum AccountTier {
-        FREE, BASIC, PREMIUM
-    }
-
-    public enum Role {
-        ROLE_USER, ROLE_ADMIN
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private UserRole role;
 }
