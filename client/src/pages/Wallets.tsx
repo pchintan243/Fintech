@@ -1,14 +1,16 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Wallet, Plus, CreditCard, Shield } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { useWallets, useCreateWallet } from "@/hooks/use-wallets";
 import { useUsers } from "@/hooks/use-users";
+import { useCurrencies } from "@/hooks/use-currencies";
 import { Wallet as WalletType, User as UserType } from "@/lib/api-client";
+import { Currency } from "@/hooks/use-currencies";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default function WalletsPage() {
@@ -64,10 +66,10 @@ export default function WalletsPage() {
                 </div>
                 
                 <h4 className="text-3xl font-display font-bold tracking-tight mb-1">
-                  {formatCurrency(Number(wallet.balance), wallet.currency)}
+                  {formatCurrency(Number(wallet.balance), wallet.currencyCode)}
                 </h4>
                 <p className="text-sm font-mono text-muted-foreground">
-                  {wallet.currency} • Available: {formatCurrency(Number(wallet.availableBalance), wallet.currency)}
+                  {wallet.currency?.symbol} {wallet.currencyCode} • Available: {formatCurrency(Number(wallet.availableBalance), wallet.currencyCode)}
                 </p>
               </div>
 
@@ -95,6 +97,7 @@ export default function WalletsPage() {
 
 function CreateWalletModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { data: users } = useUsers();
+  const { data: currencies } = useCurrencies();
   const { mutate: createWallet, isPending } = useCreateWallet();
   const [userId, setUserId] = React.useState("");
   const [currency, setCurrency] = React.useState("USD");
@@ -102,7 +105,7 @@ function CreateWalletModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) return;
-    createWallet({ data: { userId, currency } }, { onSuccess: onClose });
+    createWallet({ userId: Number(userId), currency }, { onSuccess: onClose });
   };
 
   return (
@@ -110,7 +113,7 @@ function CreateWalletModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Owner (User)</label>
-          <select 
+          <select
             required
             className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
             value={userId}
@@ -124,15 +127,16 @@ function CreateWalletModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Currency</label>
-          <select 
+          <select
             required
             className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
             value={currency}
             onChange={(e) => setCurrency(e.target.value)}
           >
-            <option value="USD">USD - US Dollar</option>
-            <option value="EUR">EUR - Euro</option>
-            <option value="GBP">GBP - British Pound</option>
+            <option value="">Select currency...</option>
+            {(currencies as Currency[])?.filter(c => c.isActive).map(c => (
+              <option key={c.id} value={c.code}>{c.code} - {c.name}</option>
+            ))}
           </select>
         </div>
         <div className="pt-4 flex justify-end gap-2">

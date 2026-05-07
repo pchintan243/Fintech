@@ -31,9 +31,9 @@ export default function PaymentsPage() {
       setDesc("");
     };
 
-    if (activeTab === "deposit") deposit({ data: { walletId, amount: numAmount, description: desc } }, { onSuccess });
-    if (activeTab === "withdraw") withdraw({ data: { walletId, amount: numAmount, description: desc } }, { onSuccess });
-    if (activeTab === "transfer" && toWalletId) transfer({ walletId, data: { toWalletId, amount: numAmount, description: desc } }, { onSuccess });
+    if (activeTab === "deposit") deposit({ walletId: Number(walletId), amount: String(numAmount), currency: "USD", description: desc }, { onSuccess });
+    if (activeTab === "withdraw") withdraw({ walletId: Number(walletId), amount: String(numAmount), currency: "USD", description: desc }, { onSuccess });
+    if (activeTab === "transfer" && toWalletId) transfer({ fromWalletId: Number(walletId), toWalletId: Number(toWalletId), amount: String(numAmount), currency: "USD", description: desc }, { onSuccess });
   };
 
   return (

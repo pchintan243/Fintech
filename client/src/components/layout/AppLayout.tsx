@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Wallet, 
-  ArrowLeftRight, 
-  CreditCard, 
-  ShieldAlert, 
+import {
+  LayoutDashboard,
+  Users,
+  DollarSign,
+  Wallet,
+  ArrowLeftRight,
+  CreditCard,
+  ShieldAlert,
   Bell,
   LogOut,
   Menu,
@@ -19,6 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 const navItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Users & KYC", href: "/users", icon: Users, role: "ROLE_ADMIN" },
+  { name: "Currencies", href: "/currencies", icon: DollarSign, role: "ROLE_ADMIN" },
   { name: "Wallets", href: "/wallets", icon: Wallet },
   { name: "Transactions", href: "/transactions", icon: ArrowLeftRight },
   { name: "Payments", href: "/payments", icon: CreditCard },

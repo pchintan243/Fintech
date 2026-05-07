@@ -3,6 +3,7 @@ package com.fintech.backend.service.impl;
 import com.fintech.backend.dto.*;
 import com.fintech.backend.entity.User;
 import com.fintech.backend.repository.UserRepository;
+import com.fintech.backend.service.EmailService;
 import com.fintech.backend.service.UserService;
 import com.fintech.backend.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +23,17 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final EmailService emailService;
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                            JwtUtil jwtUtil, AuthenticationManager authenticationManager,
-                           UserDetailsService userDetailsService) {
+                           UserDetailsService userDetailsService, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -101,15 +104,18 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists");
         }
 
+        String rawPassword = "Fintech" + System.currentTimeMillis() % 10000 + "!";
         User user = User.builder()
                 .email(request.getEmail())
                 .fullName(request.getFullName())
-                .password(passwordEncoder.encode("TempPass123!"))  // placeholder password
+                .password(passwordEncoder.encode(rawPassword))
                 .phone(request.getPhone())
                 .country(request.getCountry())
                 .build();
 
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        emailService.sendWelcomeEmail(saved, rawPassword);
+        return saved;
     }
 
     @Override

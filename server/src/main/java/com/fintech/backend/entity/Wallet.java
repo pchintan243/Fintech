@@ -1,13 +1,9 @@
 package com.fintech.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.experimental.SuperBuilder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -15,10 +11,14 @@ import java.math.BigDecimal;
 @Table(name = "tbwallets")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 public class Wallet extends BaseAuditEntity {
+
+    protected Wallet() {
+        this.balance = BigDecimal.ZERO;
+        this.availableBalance = BigDecimal.ZERO;
+        this.status = WalletStatus.ACTIVE;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,24 +27,20 @@ public class Wallet extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "useridf", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
     private User user;
 
-    @Column(name = "currency", nullable = false)
-    @Builder.Default
-    private String currency = "USD";
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "currencyidf", nullable = false)
+    private Currency currency;
 
     @Column(name = "balance", precision = 18, scale = 2, nullable = false)
-    @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(name = "availablebalance", precision = 18, scale = 2, nullable = false)
-    @Builder.Default
     private BigDecimal availableBalance = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @Builder.Default
     private WalletStatus status = WalletStatus.ACTIVE;
 
     @Column(name = "walletnumber", nullable = false, unique = true)

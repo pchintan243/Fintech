@@ -1,10 +1,10 @@
 package com.fintech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.EntityListeners;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedBy;
@@ -28,11 +28,13 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SuperBuilder
-@NoArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseAuditEntity {
+
+    protected BaseAuditEntity() {}
 
     @CreatedDate
     @Column(name = "createdat", nullable = false, updatable = false)

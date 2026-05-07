@@ -1,21 +1,20 @@
 package com.fintech.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.experimental.SuperBuilder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "tbnotifications")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 public class Notification extends BaseAuditEntity {
+
+    protected Notification() {
+        this.isRead = false;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +35,6 @@ public class Notification extends BaseAuditEntity {
     private String message;
 
     @Column(name = "isread", nullable = false)
-    @Builder.Default
     private boolean isRead = false;
 
     public enum NotificationType {

@@ -1,7 +1,31 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { navigate } from "wouter/use-browser-location";
+import { toast } from "sonner";
+import type {
+  CreateUserRequest,
+  UpdateUserRequest,
+  CreateWalletRequest,
+  DepositRequest,
+  WithdrawalRequest,
+  TransferRequest,
+} from "@/types/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+
+let backendDownTimer: ReturnType<typeof setTimeout> | null = null;
+let backendDownShown = false;
+
+const showBackendDownToast = () => {
+  if (backendDownShown) return;
+  backendDownShown = true;
+  toast.error("Backend is unavailable", {
+    description: "Cannot connect to the server. Please check if the backend is running.",
+    duration: 1000,
+  });
+  setTimeout(() => {
+    backendDownShown = false;
+  }, 4000);
+};
 
 // Helper for API calls
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
@@ -12,10 +36,16 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
     ...(options.headers || {}),
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch (err) {
+    showBackendDownToast();
+    throw err;
+  }
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -47,7 +77,8 @@ export interface Wallet {
   id: number;
   user: User;
   userId: number;
-  currency: string;
+  currency: { id: number; code: string; name: string; symbol: string };
+  currencyCode: string;
   walletNumber: string;
   balance: string;
   availableBalance: string;
@@ -89,8 +120,6 @@ export interface Notification {
   createdAt: string;
 }
 
-export type ListTransactionsParams = any;
-
 // Query Keys
 export const getListUsersQueryKey = () => ["users"];
 export const getGetUserQueryKey = (id: string | number) => ["users", id];
@@ -102,59 +131,89 @@ export const getListNotificationsQueryKey = () => ["notifications"];
 export const getGetDashboardStatsQueryKey = () => ["dashboard-stats"];
 
 // Hooks - Users
-export const useListUsers = (options: any = {}) => 
+export const useListUsers = (options: any = {}) =>
   useQuery({ queryKey: getListUsersQueryKey(), queryFn: () => apiFetch("/users"), ...options.query });
 
-export const useGetUser = (id: string | number, options: any = {}) => 
+export const useGetUser = (id: string | number, options: any = {}) =>
   useQuery({ queryKey: getGetUserQueryKey(id), queryFn: () => apiFetch(`/users/${id}`), ...options.query });
 
-export const useCreateUser = (options: any = {}) => 
-  useMutation({ mutationFn: (payload: any) => apiFetch("/users", { method: "POST", body: JSON.stringify(payload.data || payload) }), ...options.mutation });
+export const useCreateUser = (options: any = {}) =>
+  useMutation({
+    mutationFn: (data: CreateUserRequest) =>
+      apiFetch("/users", { method: "POST", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
-export const useUpdateUser = (options: any = {}) => 
-  useMutation({ mutationFn: (payload: any) => apiFetch(`/users/${payload.userId || payload.id}`, { method: "PUT", body: JSON.stringify(payload.data || payload) }), ...options.mutation });
+export const useUpdateUser = (options: any = {}) =>
+  useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateUserRequest }) =>
+      apiFetch(`/users/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
 // Hooks - Wallets
-export const useListWallets = (options: any = {}) => 
+export const useListWallets = (options: any = {}) =>
   useQuery({ queryKey: getListWalletsQueryKey(), queryFn: () => apiFetch("/wallets"), ...options.query });
 
-export const useGetWallet = (id: string | number, options: any = {}) => 
+export const useGetWallet = (id: string | number, options: any = {}) =>
   useQuery({ queryKey: getGetWalletQueryKey(id), queryFn: () => apiFetch(`/wallets/${id}`), ...options.query });
 
-export const useCreateWallet = (options: any = {}) => 
-  useMutation({ mutationFn: (data: any) => apiFetch("/wallets", { method: "POST", body: JSON.stringify(data) }), ...options.mutation });
+export const useCreateWallet = (options: any = {}) =>
+  useMutation({
+    mutationFn: (data: CreateWalletRequest) =>
+      apiFetch("/wallets", { method: "POST", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
 // Hooks - Transactions
-export const useListTransactions = (params: ListTransactionsParams = {}) => 
+export const useListTransactions = () =>
   useQuery({ queryKey: getListTransactionsQueryKey(), queryFn: () => apiFetch("/transactions") });
 
-export const useGetTransaction = (id: string | number, options: any = {}) => 
+export const useGetTransaction = (id: string | number, options: any = {}) =>
   useQuery({ queryKey: ["transactions", id], queryFn: () => apiFetch(`/transactions/${id}`), ...options.query });
 
 // Hooks - Risk
-export const useListRiskFlags = () => 
+export const useListRiskFlags = () =>
   useQuery({ queryKey: getListRiskFlagsQueryKey(), queryFn: () => apiFetch("/risk") });
 
-export const useResolveRiskFlag = (options: any = {}) => 
-  useMutation({ mutationFn: (id: string | number) => apiFetch(`/risk/${id}/resolve`, { method: "POST" }), ...options.mutation });
+export const useResolveRiskFlag = (options: any = {}) =>
+  useMutation({
+    mutationFn: (id: number) => apiFetch(`/risk/${id}/resolve`, { method: "POST" }),
+    ...options.mutation,
+  });
 
 // Hooks - Notifications
-export const useListNotifications = () => 
+export const useListNotifications = () =>
   useQuery({ queryKey: getListNotificationsQueryKey(), queryFn: () => apiFetch("/notifications") });
 
-export const useMarkNotificationRead = (options: any = {}) => 
-  useMutation({ mutationFn: (id: string | number) => apiFetch(`/notifications/${id}/read`, { method: "POST" }), ...options.mutation });
+export const useMarkNotificationRead = (options: any = {}) =>
+  useMutation({
+    mutationFn: (id: number) => apiFetch(`/notifications/${id}/read`, { method: "POST" }),
+    ...options.mutation,
+  });
 
 // Payments
-export const useInitiateDeposit = (options: any = {}) => 
-  useMutation({ mutationFn: (data: any) => apiFetch("/payments/deposit", { method: "POST", body: JSON.stringify(data) }), ...options.mutation });
+export const useInitiateDeposit = (options: any = {}) =>
+  useMutation({
+    mutationFn: (data: DepositRequest) =>
+      apiFetch("/payments/deposit", { method: "POST", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
-export const useInitiateWithdrawal = (options: any = {}) => 
-  useMutation({ mutationFn: (data: any) => apiFetch("/payments/withdrawal", { method: "POST", body: JSON.stringify(data) }), ...options.mutation });
+export const useInitiateWithdrawal = (options: any = {}) =>
+  useMutation({
+    mutationFn: (data: WithdrawalRequest) =>
+      apiFetch("/payments/withdrawal", { method: "POST", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
-export const useTransferFunds = (options: any = {}) => 
-  useMutation({ mutationFn: (data: any) => apiFetch("/payments/transfer", { method: "POST", body: JSON.stringify(data) }), ...options.mutation });
+export const useTransferFunds = (options: any = {}) =>
+  useMutation({
+    mutationFn: (data: TransferRequest) =>
+      apiFetch("/payments/transfer", { method: "POST", body: JSON.stringify(data) }),
+    ...options.mutation,
+  });
 
 // Stats
-export const useGetDashboardStats = () => 
+export const useGetDashboardStats = () =>
   useQuery({ queryKey: getGetDashboardStatsQueryKey(), queryFn: () => apiFetch("/transactions/stats") });

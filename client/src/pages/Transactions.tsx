@@ -1,7 +1,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Filter, ArrowUpRight, ArrowDownLeft, RefreshCcw } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { Transaction } from "@/lib/api-client";
 import { Badge } from "@/components/ui/Badge";
 import { useTransactions } from "@/hooks/use-transactions";

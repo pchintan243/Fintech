@@ -1,12 +1,11 @@
 package com.fintech.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.experimental.SuperBuilder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -14,10 +13,16 @@ import java.math.BigDecimal;
 @Table(name = "tbusers")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SuperBuilder
 public class User extends BaseAuditEntity {
+
+    protected User() {
+        this.kycStatus = KycStatus.UNVERIFIED;
+        this.accountTier = AccountTier.FREE;
+        this.transactionLimit = new BigDecimal("1000.00");
+        this.role = Role.ROLE_USER;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +35,7 @@ public class User extends BaseAuditEntity {
     @Column(name = "fullname", nullable = false)
     private String fullName;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -38,16 +44,13 @@ public class User extends BaseAuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "kycstatus", nullable = false)
-    @Builder.Default
     private KycStatus kycStatus = KycStatus.UNVERIFIED;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "accounttier", nullable = false)
-    @Builder.Default
     private AccountTier accountTier = AccountTier.FREE;
 
     @Column(name = "transactionlimit", precision = 18, scale = 2, nullable = false)
-    @Builder.Default
     private BigDecimal transactionLimit = new BigDecimal("1000.00");
 
     @Column(name = "country")
@@ -67,6 +70,5 @@ public class User extends BaseAuditEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    @Builder.Default
-    private Role role = Role.ROLE_USER;
+    private Role role;
 }

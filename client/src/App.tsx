@@ -1,12 +1,13 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import NotFound from "@/pages/not-found";
 
 import Dashboard from "@/pages/Dashboard";
 import UsersPage from "@/pages/Users";
+import CurrenciesPage from "@/pages/Currencies";
 import WalletsPage from "@/pages/Wallets";
 import TransactionsPage from "@/pages/Transactions";
 import PaymentsPage from "@/pages/Payments";
@@ -40,6 +41,11 @@ function Router() {
               <Route path="/users">
                 <ProtectedRoute requiredRole="ROLE_ADMIN">
                   <UsersPage />
+                </ProtectedRoute>
+              </Route>
+              <Route path="/currencies">
+                <ProtectedRoute requiredRole="ROLE_ADMIN">
+                  <CurrenciesPage />
                 </ProtectedRoute>
               </Route>
               <Route path="/wallets" component={WalletsPage} />

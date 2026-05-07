@@ -1,5 +1,6 @@
 package com.fintech.backend.controller;
 
+import com.fintech.backend.dto.CreateWalletRequestDTO;
 import com.fintech.backend.entity.User;
 import com.fintech.backend.entity.Wallet;
 import com.fintech.backend.service.UserService;
@@ -9,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/wallets")
@@ -36,7 +36,7 @@ public class WalletController {
     }
 
     @PostMapping
-    public ResponseEntity<Wallet> createWallet(Authentication authentication, @RequestBody Map<String, String> request) {
+    public ResponseEntity<Wallet> createWallet(Authentication authentication, @RequestBody CreateWalletRequestDTO dto) {
         User user;
         if (authentication == null || authentication.getName().equals("anonymousUser")) {
             user = userService.getAllUsers().get(0);
@@ -44,7 +44,6 @@ public class WalletController {
             String email = authentication.getName();
             user = userService.getCurrentUser(email);
         }
-        String currency = request.getOrDefault("currency", "USD");
-        return ResponseEntity.ok(walletService.createWallet(user.getId(), currency));
+        return ResponseEntity.ok(walletService.createWallet(user.getId(), dto.getCurrency()));
     }
 }

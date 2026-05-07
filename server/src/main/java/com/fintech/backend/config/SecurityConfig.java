@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/seed/**").permitAll()
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/risk/**").hasRole("ADMIN")
+                .requestMatchers("/api/currencies/**").hasRole("ADMIN")
                 .requestMatchers("/api/auth/login/**").permitAll()
                 .anyRequest().authenticated()
             )

@@ -33,9 +33,8 @@ export function useUpdateUser() {
   const qc = useQueryClient();
   return useGenUpdateUser({
     mutation: {
-      onSuccess: (_, variables) => {
+      onSuccess: () => {
         qc.invalidateQueries({ queryKey: getListUsersQueryKey() });
-        qc.invalidateQueries({ queryKey: getGetUserQueryKey(variables.userId) });
       }
     }
   });

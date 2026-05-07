@@ -47,8 +47,8 @@ public class UserController {
     }
 
 
-    @PutMapping
-    public ResponseEntity<User> updateUser(@RequestParam Long id, @RequestBody UpdateUserRequestDTO dto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequestDTO dto) {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 }

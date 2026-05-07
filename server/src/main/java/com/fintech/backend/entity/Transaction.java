@@ -1,12 +1,9 @@
 package com.fintech.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.experimental.SuperBuilder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
@@ -14,10 +11,13 @@ import java.math.BigDecimal;
 @Table(name = "tbtransactions")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
 public class Transaction extends BaseAuditEntity {
+
+    protected Transaction() {
+        this.currency = "USD";
+        this.status = TransactionStatus.PENDING;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +36,10 @@ public class Transaction extends BaseAuditEntity {
     private BigDecimal amount;
 
     @Column(name = "currency", nullable = false)
-    @Builder.Default
     private String currency = "USD";
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    @Builder.Default
     private TransactionStatus status = TransactionStatus.PENDING;
 
     @Column(name = "description")

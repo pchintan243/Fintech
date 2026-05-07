@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,6 +22,7 @@ import java.net.UnknownHostException;
  */
 @Slf4j
 @SpringBootApplication
+@EnableAsync
 public class FintechDashboardApplication {
 
     private final Environment environment;

@@ -1,12 +1,11 @@
-import { 
-  useListTransactions as useGenListTransactions, 
+import {
+  useListTransactions as useGenListTransactions,
   useGetTransaction as useGenGetTransaction,
   useGetDashboardStats as useGenGetDashboardStats,
-  type ListTransactionsParams
 } from "@/lib/api-client";
 
-export function useTransactions(params?: ListTransactionsParams) {
-  return useGenListTransactions(params);
+export function useTransactions() {
+  return useGenListTransactions();
 }
 
 export function useTransaction(transactionId: string) {

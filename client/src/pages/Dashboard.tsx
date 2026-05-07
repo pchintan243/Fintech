@@ -4,7 +4,7 @@ import { Users, Wallet, ArrowUpRight, ShieldAlert, Activity } from "lucide-react
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useDashboardStats } from "@/hooks/use-transactions";
-import { formatCurrency, formatDate, formatNumber } from "@/lib/utils";
+import { cn, formatCurrency, formatDate, formatNumber } from "@/lib/utils";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {

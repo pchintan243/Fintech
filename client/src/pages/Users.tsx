@@ -137,9 +137,9 @@ function EditUserModal({ user, isOpen, onClose }: { user: User | null, isOpen: b
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    updateUser({ 
-      userId: user.id, 
-      data: { kycStatus: status, accountTier: tier } 
+    updateUser({
+      id: user.id,
+      data: { kycStatus: status, accountTier: tier }
     }, {
       onSuccess: () => onClose()
     });
@@ -189,7 +189,7 @@ function CreateUserModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createUser({ data }, { onSuccess: () => { onClose(); setData({ fullName: "", email: "", phone: "", country: "" }); } });
+    createUser(data, { onSuccess: () => { onClose(); setData({ fullName: "", email: "", phone: "", country: "" }); } });
   };
 
   return (
