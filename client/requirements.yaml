@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "For sleek page entry animations, modal transitions, and micro-interactions"
+  "recharts": "For modern financial dashboard area and bar charts"
+  "date-fns": "For elegant date formatting in transaction histories and tables"
+  "clsx": "For conditional tailwind class composition"
+  "tailwind-merge": "For safely merging tailwind classes in reusable components"
+  "lucide-react": "For crisp, beautiful interface icons"
+  "@hookform/resolvers": "For Zod schema validation in forms"
+  "react-hook-form": "For robust payment and user editing forms"
+  "zod": "For precise form validation schemas"
+
+images:
+  - path: "artifacts/fintrack/public/images/logo.png"
+    description: "Minimalist modern geometric fintech logo mark, abstract sharp edges, electric blue and vibrant teal gradient on a fully transparent background"
+    aspect_ratio: "1:1"
+
+notes:
+  - Assuming @workspace/api-client-react provides typed React Query hooks (useListUsers, useGetDashboardStats, etc.)
+  - Assuming dark mode is the primary aesthetic for this sleek fintech dashboard

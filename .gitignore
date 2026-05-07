@@ -1,0 +1,141 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.env
+VITE_*.env
+server/src/main/resources/application-local.yml
+server/src/main/resources/application-local.properties
+
+# Credentials & keys
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+*.keystore
+*.truststore
+*.jks
+credentials.json
+secrets.json
+service-account-key.json
+google-credentials.json
+
+# Build output
+client/dist
+client/dist-ssr
+client/.vite
+server/target/
+dist/
+tmp/
+out-tsc/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.project/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log.*
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Misc
+.cache/
+.local/
+.agents
+
+# Claude Code local settings
+.claude/
+settings.local.json/
+.grade/
+*.pid
+*.seed
+*.pid.lock
+typings/
+/connect.lock
+/libpeerconnection.log
+testem.log
+*.tsbuildinfo
+.npm
+.eslintcache
+*.pid.lock
+
+# Replit specific
+.local/
+.cache/
+
+# Gradle (if ever used)
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Maven (already has target/, but double-check)
+!**/src/main/war-resources
+!**/src/test/java
+!**/src/test/resources
+
+# Spring Boot
+*.pid
+
+# Client build
+vite.config.ts.timestamp-*
+*.tsbuildinfo
+.fex/
+.fvu/
+
+# Database migrations (local only)
+*.sqlite
+*.sqlite3
+db/*.db
+db/*.sqlite
+
+# Temp / scratch
+tmp/
+temp/
+scratch/
+*.tmp
