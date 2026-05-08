@@ -10,6 +10,7 @@ public interface WalletService {
     Optional<Wallet> getById(Long id);
     List<Wallet> getUserWallets(Long userId);
     Wallet createWallet(Long userId, String currency);
+    Wallet createWalletForUser(Long targetUserId, String currency);
 
     // Projection-based read methods
     Optional<WalletProjection> getByIdProjected(Long id);

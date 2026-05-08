@@ -1,15 +1,15 @@
-import * as React from "react";
 import { motion } from "framer-motion";
 import { Users, Wallet, ArrowUpRight, ShieldAlert, Activity } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { useDashboardStats } from "@/hooks/use-transactions";
+import { useDashboardStats, useTransactions } from "@/hooks/use-transactions";
 import { cn, formatCurrency, formatDate, formatNumber } from "@/lib/utils";
 import type { Transaction } from "@/lib/api-client";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function Dashboard() {
   const { data: stats, isLoading } = useDashboardStats();
+  const { data: transactions } = useTransactions();
 
   if (isLoading) {
     return (
@@ -25,15 +25,35 @@ export default function Dashboard() {
 
   if (!stats) return <div className="text-danger">Failed to load dashboard</div>;
 
-  // Fake chart data based on monthly volume
-  const chartData = [
-    { name: "Jan", volume: stats.monthlyVolume * 0.4 },
-    { name: "Feb", volume: stats.monthlyVolume * 0.6 },
-    { name: "Mar", volume: stats.monthlyVolume * 0.8 },
-    { name: "Apr", volume: stats.monthlyVolume * 1.1 },
-    { name: "May", volume: stats.monthlyVolume * 0.9 },
-    { name: "Jun", volume: stats.monthlyVolume },
-  ];
+  // Real chart data aggregated from transactions by month
+  const chartData = (() => {
+    if (!transactions?.length) {
+      return [
+        { name: "Jan", volume: 0 },
+        { name: "Feb", volume: 0 },
+        { name: "Mar", volume: 0 },
+        { name: "Apr", volume: 0 },
+        { name: "May", volume: 0 },
+        { name: "Jun", volume: 0 },
+      ];
+    }
+
+    const monthlyVolume: Record<string, number> = {
+      Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0,
+    };
+
+    transactions.forEach((tx) => {
+      if (tx.status !== "COMPLETED") return;
+      const monthIndex = new Date(tx.createdAt).getMonth();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthName = monthNames[monthIndex];
+      if (monthName in monthlyVolume) {
+        monthlyVolume[monthName] += tx.amount;
+      }
+    });
+
+    return Object.entries(monthlyVolume).map(([name, volume]) => ({ name, volume }));
+  })();
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">

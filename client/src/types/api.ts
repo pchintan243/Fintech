@@ -13,7 +13,7 @@ export interface UpdateUserRequest {
 
 // Wallet Types
 export interface CreateWalletRequest {
-  userId: number;
+  userId?: number;
   currency: string;
 }
 

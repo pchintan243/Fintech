@@ -71,4 +71,21 @@ public class WalletServiceImpl implements WalletService {
 
         return walletRepository.save(wallet);
     }
+
+    @Override
+    public Wallet createWalletForUser(Long targetUserId, String currencyCode) {
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Currency currency = currencyRepository.findByCode(currencyCode)
+                .orElseThrow(() -> new RuntimeException("Currency not found: " + currencyCode));
+
+        Wallet wallet = Wallet.builder()
+                .user(user)
+                .currency(currency)
+                .walletNumber(UUID.randomUUID().toString() + "-" + currencyCode)
+                .build();
+
+        return walletRepository.save(wallet);
+    }
 }

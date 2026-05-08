@@ -118,7 +118,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists");
         }
 
-        String rawPassword = "Fintech" + System.currentTimeMillis() % 10000 + "!";
+        String[] nameParts = request.getFullName().trim().split("\\s+");
+        String lastName = nameParts.length > 0 ? nameParts[nameParts.length - 1] : "";
+        String firstName = nameParts.length > 1 ? nameParts[0] : nameParts[0];
+        String rawPassword = lastName + firstName + java.time.Year.now().getValue();
         User user = User.builder()
                 .email(request.getEmail())
                 .fullName(request.getFullName())

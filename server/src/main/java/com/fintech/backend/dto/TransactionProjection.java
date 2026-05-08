@@ -16,4 +16,5 @@ public interface TransactionProjection {
     String getCounterpartyAccount();
     BigDecimal getBalanceBefore();
     BigDecimal getBalanceAfter();
+    LocalDateTime getCreatedAt();
 }

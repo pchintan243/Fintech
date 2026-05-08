@@ -43,8 +43,14 @@ public class WalletController {
 
     @PostMapping
     public ResponseEntity<Wallet> createWallet(Authentication authentication, @RequestBody CreateWalletRequestDTO dto) {
-        User user = getAuthenticatedUser(authentication);
-        Wallet wallet = walletService.createWallet(user.getId(), dto.getCurrency());
+        User currentUser = getAuthenticatedUser(authentication);
+        Long targetUserId;
+        if (dto.getUserId() != null && currentUser.getRole().name().equals("ROLE_ADMIN")) {
+            targetUserId = dto.getUserId();
+        } else {
+            targetUserId = currentUser.getId();
+        }
+        Wallet wallet = walletService.createWalletForUser(targetUserId, dto.getCurrency());
         return ResponseEntity.ok(wallet);
     }
 }

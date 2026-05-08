@@ -5,13 +5,13 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
-import { Input } from "@/components/ui/Input";
 import { useWallets, useCreateWallet } from "@/hooks/use-wallets";
 import { useUsers } from "@/hooks/use-users";
 import { useCurrencies } from "@/hooks/use-currencies";
 import { Wallet as WalletType, User as UserType } from "@/lib/api-client";
 import { Currency } from "@/hooks/use-currencies";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function WalletsPage() {
   const { data: wallets, isLoading, error, refetch } = useWallets();
@@ -25,7 +25,7 @@ export default function WalletsPage() {
           <p className="text-muted-foreground">Manage digital wallets and balances</p>
         </div>
         <Button onClick={() => setIsCreateOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" /> Provision Wallet
+          <Plus className="w-4 h-4 mr-2" /> Create Wallet
         </Button>
       </div>
 
@@ -93,32 +93,37 @@ function CreateWalletModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
   const { data: users } = useUsers();
   const { data: currencies } = useCurrencies();
   const { mutate: createWallet, isPending } = useCreateWallet();
+  const { isAdmin } = useAuth();
   const [userId, setUserId] = React.useState("");
   const [currency, setCurrency] = React.useState("USD");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userId) return;
-    createWallet({ userId: Number(userId), currency }, { onSuccess: onClose });
+    if (isAdmin && userId) {
+      createWallet({ userId: Number(userId), currency }, { onSuccess: onClose });
+    } else {
+      createWallet({ currency }, { onSuccess: onClose });
+    }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Provision Wallet">
+    <Modal isOpen={isOpen} onClose={onClose} title={isAdmin ? "Provision Wallet" : "Create Wallet"}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Owner (User)</label>
-          <select
-            required
-            className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-          >
-            <option value="">Select a user...</option>
-            {(users as UserType[])?.map(u => (
-              <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
-            ))}
-          </select>
-        </div>
+        {isAdmin && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Owner (User)</label>
+            <select
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+            >
+              <option value="">Create for myself</option>
+              {(users as UserType[])?.map(u => (
+                <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label className="block text-sm font-medium mb-1">Currency</label>
           <select
