@@ -12,7 +12,8 @@ import {
   Bell,
   LogOut,
   Menu,
-  X
+  X,
+  MessageSquare
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
@@ -26,6 +27,7 @@ const navItems = [
   { name: "Payments", href: "/payments", icon: CreditCard },
   { name: "Risk & Fraud", href: "/risk", icon: ShieldAlert, role: "ROLE_ADMIN" },
   { name: "Notifications", href: "/notifications", icon: Bell },
+  { name: "Contact Us", href: "/contact", icon: MessageSquare },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

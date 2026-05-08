@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { useUsers, useUpdateUser, useCreateUser } from "@/hooks/use-users";
+import { useCountries } from "@/hooks/use-countries";
 import { formatDate } from "@/lib/utils";
 import type { User } from "@/lib/api-client";
 
@@ -185,6 +186,7 @@ function EditUserModal({ user, isOpen, onClose }: { user: User | null, isOpen: b
 
 function CreateUserModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { mutate: createUser, isPending } = useCreateUser();
+  const { data: countries } = useCountries();
   const [data, setData] = React.useState({ fullName: "", email: "", phone: "", country: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -206,11 +208,20 @@ function CreateUserModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Phone</label>
-            <Input value={data.phone} onChange={(e) => setData({...data, phone: e.target.value})} placeholder="+1 234 567 890" />
+            <Input value={data.phone} maxLength={10} onChange={(e) => setData({...data, phone: e.target.value.replace(/\D/g, "").slice(0, 10)})} placeholder="1234567890" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Country</label>
-            <Input value={data.country} onChange={(e) => setData({...data, country: e.target.value})} placeholder="US" />
+            <select
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background select-reset focus:ring-2 focus:ring-primary/50 outline-none"
+              value={data.country}
+              onChange={(e) => setData({ ...data, country: e.target.value })}
+            >
+              <option value="">Select country...</option>
+              {countries?.map((c) => (
+                <option key={c.code} value={c.code}>{c.name}</option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="pt-4 flex justify-end gap-2">

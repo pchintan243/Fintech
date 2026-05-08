@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { navigate } from "wouter/use-browser-location";
 import { toast } from "sonner";
+import { API_URL } from "@/lib/config";
 import type {
   CreateUserRequest,
   UpdateUserRequest,
@@ -10,9 +11,6 @@ import type {
   TransferRequest,
 } from "@/types/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
-
-let backendDownTimer: ReturnType<typeof setTimeout> | null = null;
 let backendDownShown = false;
 
 const showBackendDownToast = () => {

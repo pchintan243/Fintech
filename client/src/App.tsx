@@ -13,6 +13,7 @@ import TransactionsPage from "@/pages/Transactions";
 import PaymentsPage from "@/pages/Payments";
 import RiskPage from "@/pages/Risk";
 import NotificationsPage from "@/pages/Notifications";
+import ContactPage from "@/pages/Contact";
 import Login from "@/pages/Login";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
@@ -29,7 +30,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/login" component={Login} />
-      {/* 
+      <Route path="/contact" component={ContactPage} />
+      {/*
           Capture all other routes to be handled by ProtectedRoute and AppLayout.
           The nested Switch then handles the specific sub-pages.
       */}

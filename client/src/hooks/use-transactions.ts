@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useGetDashboardStats as useGenGetDashboardStats, Transaction } from "@/lib/api-client";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+import { API_URL } from "@/lib/config";
 
 async function apiFetchTransactions(params?: { status?: string }): Promise<Transaction[]> {
   const token = localStorage.getItem("fintrack_token");

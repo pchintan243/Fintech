@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useAuth, User } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Lock, Mail } from "lucide-react";
+import { API_URL } from "@/lib/config";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -27,7 +28,6 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -129,7 +129,7 @@ export default function Login() {
           </form>
           
           <div className="mt-6 text-center text-sm text-slate-500">
-            Don't have an account? <span className="text-blue-400 hover:underline cursor-pointer">Contact support</span>
+            Don't have an account? <Link href="/contact" className="text-blue-400 hover:underline">Contact support</Link>
           </div>
         </CardContent>
       </Card>
