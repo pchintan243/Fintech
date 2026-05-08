@@ -2,7 +2,7 @@ spring:
   application:
     name: java-backend
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:fintech}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:fintech}?useSSL=true&verifyServerCertificate=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&serverTimezone=UTC
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:954572309492}
     driver-class-name: com.mysql.cj.jdbc.Driver
